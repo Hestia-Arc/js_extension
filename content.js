@@ -18,32 +18,59 @@ function onAccessApproved(stream) {
     });
   };
 
-  recorder.ondataavailable = function() {
-
+  recorder.ondataavailable = function () {
     let recordedBlob = event.data;
 
     let url = URL.createObjectURL(recordedBlob);
 
-    let a = document.createElement("a");
+    // -------------
+    // fetch(" https://backendchromeextention.onrender.com/upload", {
+    //   method: "POST",
+    //   body: JSON.stringify({ url }),
+    //   headers: { "Content-Type": "application/json" },
+    // })
+    //   .then((res) => res.json())
+    //   .then((json) => console.log("file sent: " + json))
+    //   .catch((err) => console.log(err, +"error not sent"));
 
-    a.href = url;
-    a.download = "video-recording.webm";
+    // ------------------
 
-    document.body.appendChild(a);
-    a.click();
+    // let a = document.createElement("a");
 
-    document.body.removeChild(a);
+    // a.href = url;
+    // a.download = "video-recording.webm";
 
-    URL.revokeObjectURL(url)
+    // document.body.appendChild(a);
+    // a.click();
+
+    // document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+
+    window.location.assign("http://localhost:3000/");
+
+    // window.location.assign("https://help-me-out-dusky.vercel.app/captured");
 
     // can send to the api here
+  };
 }
-}
-
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "request_recording") {
-    console.log("resquesting recording");
+    console.log("requesting recording");
+
+    // getNotificationPermission() {
+    // chrome.permissions.request(
+    //     {
+    //         permissions: ["notifications"],
+    //     },
+    //     function(granted) {
+    //         if(granted) {
+    //             startRecording();
+    //         }
+    //     }
+    // )
+    // }
 
     sendResponse(`processed: ${message.action}`);
 
@@ -58,5 +85,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .then((stream) => {
         onAccessApproved(stream);
       });
+  }
+
+  if (message.action === "stopvideo") {
+    console.log("stopping recording");
+
+    sendResponse(`processed: ${message.action}`);
+
+    if (!recorder) {
+      console.error("no recorder");
+    }
+
+    recorder.stop();
   }
 });

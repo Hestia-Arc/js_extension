@@ -26,7 +26,9 @@
     "tabs",
     "activeTab"
 
-  ]
+  ],
+
+  "optional_permissions": ["notifications"]
 
 
 }
