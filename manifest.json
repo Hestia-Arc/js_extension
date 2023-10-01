@@ -14,21 +14,24 @@
     "default_icon": {
         "48": "images/icon.png"
 
-    }
+    },
+    "title": "test"
   }, 
   "host_permissions": [
     "http://*/",
-    "https://*/*"
+    "https://*/*",
+    "<all_urls>"
   ],
 
   "permissions": [
     "scripting",
     "tabs",
-    "activeTab"
+    "activeTab",
+    "notifications"
 
-  ],
+  ]
+ 
 
-  "optional_permissions": ["notifications"]
 
 
 }

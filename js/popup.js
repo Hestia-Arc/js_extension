@@ -11,6 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // START BUTTON
   // -----------------------------------
   startVideoButton.addEventListener("click", () => {
+
+    // chrome.permissions.request({
+    //     origins: ["<all_urls>"]
+    // });
+
     chrome.tabs.query(
       {
         active: true,
@@ -30,6 +35,12 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
     );
+
+
+    
+
+
+   
   });
 
   //   ---------------------------------------
