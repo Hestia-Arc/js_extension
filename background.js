@@ -14,10 +14,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-chrome.action.onClicked.addListener( function() {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {command: "append", function(response) {
-            console.log(response.result);
-        }})
-    })
-})
+// chrome.action.onClicked.addListener( function() {
+//     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+//         chrome.tabs.sendMessage(tabs[0].id, {command: "append", function(response) {
+//             console.log(response.result);
+//         }})
+//     })
+// })

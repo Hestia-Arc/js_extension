@@ -1,14 +1,12 @@
 console.log("content injected...");
 
-
 let htElement = document.createElement("div");
-  let label = document.createElement("h2");
+let label = document.createElement("h2");
 
 //// ==================================
 // VIDEO CONTROLS
 // ====================================
 function controlContainer() {
-  
   label.textContent = "hello welcome";
 
   htElement.style.position = "absolute";
@@ -50,7 +48,6 @@ function controlContainer() {
   sendResponse(`result: ${message.action}`);
 }
 
-
 // ==================================
 // GETTING RECORDING TRACKS
 // ====================================
@@ -72,28 +69,19 @@ function onAccessApproved(stream) {
       if (track.readyState === "live") {
         track.stop();
 
-        htElement.style.display = "none";
       }
     });
   };
 
   // ------------------------------------
 
-  const chunks = [];
+  //   const chunks = [];
 
   recorder.ondataavailable = function (event) {
-    // let recordedBlob = event.data;
-    chunks.push(event.data);
-    let result = "";
+    let recordedBlob = event.data;
 
-    const blob = new Blob(chunks, { type: "video/webm" });
 
-    const vidURL = window.URL.createObjectURL(blob);
-
-    console.log(vidURL);
-
-    // ---------------------------------------
-
+    console.log(recordedBlob);
     var formData = new FormData();
     formData.append("video", recordedBlob);
 
@@ -106,104 +94,60 @@ function onAccessApproved(stream) {
     const sendBlob = async () => {
       try {
         const dataFetch = await fetch(
-          "https://backend",
+          "https://backendchromeextention.onrender.com/upload",
           requestOptions
         );
 
+        // RESPONSE FROM BACKEND
         const detail = await dataFetch.json();
 
         console.log(detail);
-        result = detail;
 
-        console.log(result.filename + "returned...");
+        console.log(detail.filename + "returned...");
+
+        // REDIRECTING TO LANDING PAGE
         window.location.assign(
-          `http://localhost:3000/captured/${result.filename}`
+          `http://localhost:3000/captured/${detail.filename}`
         );
       } catch (error) {
         console.log("Error:", error);
       }
-      //   .then((result) => console.log(result))
-      //   .catch((err) => console.log(err + "error"));
     };
 
     sendBlob();
-
-    // ----------------------------------------
-
-    // fetch("https://backendchromeextention.onrender.com/upload", requestOptions)
-    //   .then((res) => res.text())
-    //   .then((result) => console.log(result))
-    //   .catch((err) => console.log(err + "error"));
-
-    // let a = document.createElement("a");
-    // a.style.display = "none";
-
-    // window.location.assign(`http://localhost:3000/captured/${result.filename}`);
-
-    // a.href = `http://localhost:3000/captured/${result.filename}`;
-    // a.target = "_blank";
-    // document.body.appendChild(a);
-    // a.click();
-
-    // -------------------------------------------
-
-    // let url = URL.createObjectURL(recordedBlob);
-
-    // let a = document.createElement("a");
-
-    // a.href = url;
-
-    // // console.log(url, + "video");
-    // a.download = "video-recording.webm";
-
-    // document.body.appendChild(a);
-    // a.click();
-
-    // document.body.removeChild(a);
-
-    // URL.revokeObjectURL(url);
-
-    // window.location.assign("http://localhost:3000/");
-
-    // window.location.assign("https://help-me-out-dusky.vercel.app/captured");
-
-    // can send to the api here
   };
 }
-
-
 
 // ==================================
 // RUNTIME
 // ====================================
-chrome.runtime.onMessage.addListener(
-  (message, request, sender, sendResponse) => {
-    if (message.action === "request_recording") {
-      console.log("requesting recording");
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "request_recording") {
+    console.log("requesting recording");
 
-      navigator.mediaDevices
-        .getDisplayMedia({
-          audio: true,
-          video: {
-            width: 9999999999,
-            height: 9999999999,
-          },
-        })
-        .then((stream) => {
-          onAccessApproved(stream);
+    sendResponse(`processed: ${message.action}`);
 
-          // -----------
+    navigator.mediaDevices
+      .getDisplayMedia({
+        audio: true,
+        video: {
+          width: 9999999999,
+          height: 9999999999,
+        },
+      })
+      .then((stream) => {
+        onAccessApproved(stream);
 
-          console.log(request.command);
+        // -----------
 
-          controlContainer();
+        //   console.log(request.command);
 
-          // sendResponse(`processed: ${message.action}`);
-        });
+        //   controlContainer();
 
-      
+        // sendResponse(`processed: ${message.action}`);
+      });
 
-      //   ------------------------------------------------
+    //   ------------------------------------------------
     //   REQUESTING PERMISSION
     //   navigator.mediaDevices.getUserMedia({
     //       audio: true,
@@ -216,28 +160,28 @@ chrome.runtime.onMessage.addListener(
 
     //       onAccessApproved(stream);
     //     });
-      //   --------------------------------------------------
-    }
-
-
-    // ========================================
-    // STOPPING RECORDING
-    // ========================================
-    if (message.action === "stopvideo") {
-      console.log("stopping recording");
-
-      sendResponse(`processed: ${message.action}`);
-
-      if (!recorder) {
-        console.error("no recorder");
-      }
-
-      recorder.stop();
-    }
+    //   --------------------------------------------------
   }
-);
 
-// -------------
+  // ========================================
+  // STOPPING RECORDING
+  // ========================================
+  if (message.action === "stopvideo") {
+    console.log("stopping recording");
+
+    sendResponse(`processed: ${message.action}`);
+
+    if (!recorder) {
+      console.error("no recorder");
+    }
+
+    recorder.stop();
+  }
+});
+
+// ----------------------------------------------
+//
+// ------------------------------------------------
 // fetch(" https://backendchromeextention.onrender.com/upload", {
 //   method: "POST",
 //   body: JSON.stringify({ url }),
@@ -248,3 +192,58 @@ chrome.runtime.onMessage.addListener(
 //   .catch((err) => console.log(err, +"error not sent"));
 
 // ------------------
+
+// ---------------------------------
+// FOR CHUNKING
+
+// chunks.push(event.data);
+
+//     const blob = new Blob(chunks, { type: "video/webm" });
+
+//     const vidURL = window.URL.createObjectURL(blob);
+
+//     console.log(vidURL);
+
+// ---------------------------
+// PREVIOUS
+// ---------------------
+// ----------------------------------------
+
+// fetch("https://backendchromeextention.onrender.com/upload", requestOptions)
+//   .then((res) => res.text())
+//   .then((result) => console.log(result))
+//   .catch((err) => console.log(err + "error"));
+
+// let a = document.createElement("a");
+// a.style.display = "none";
+
+// window.location.assign(`http://localhost:3000/captured/${result.filename}`);
+
+// a.href = `http://localhost:3000/captured/${result.filename}`;
+// a.target = "_blank";
+// document.body.appendChild(a);
+// a.click();
+
+// -------------------------------------------
+
+// let url = URL.createObjectURL(recordedBlob);
+
+// let a = document.createElement("a");
+
+// a.href = url;
+
+// // console.log(url, + "video");
+// a.download = "video-recording.webm";
+
+// document.body.appendChild(a);
+// a.click();
+
+// document.body.removeChild(a);
+
+// URL.revokeObjectURL(url);
+
+// window.location.assign("http://localhost:3000/");
+
+// window.location.assign("https://help-me-out-dusky.vercel.app/captured");
+
+// can send to the api here
